@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/default}">
+
+<head>
+<script th:inline="javascript">
+// /*<![CDATA[*/
+$(document).ready(function() {
+	
+	init();
+});
+
+function init() {
+
+}
+
+function fn_link(name, url, token, id, pw) {
+	if (url.trim() != "" && url != "undefined") {
+		var path = "";
+		if (!validateUrl(url)) {
+			action_popup.alert("Invalid URL");
+			return;
+		} else {
+			if (url.charAt(url.length-1) == "/") {
+				url = url.slice(0,-1)
+			}
+		}
+
+		var path = url
+		window.open(path, '_blank');
+
+	} else {
+		action_popup.alert("URL Info Miss");
+		return;
+	}
+}
+
+function fn_add() {
+	$("#list_form").attr("action", "/data/addform");
+    $("#list_form").submit();
+}
+
+var g_siteId = "";
+function fn_modify(site_id) {
+	g_siteId = site_id;
+	var cert = $("#eye_cert").val()
+	if (cert == 1) {
+		$("#id").val(site_id);
+		$("#pageSize").val($("#dataPageSizeSelect").val());
+		$("#page").val([[${list.number}]]);
+		$("#list_form").attr("action", "/data/modifyform");
+	    $("#list_form").submit();
+	} else {
+		$("#md_admin_pass").val("");
+	    action_popup4.admin("Admin Authentication", function(res) {
+	        if (res) {
+	        	fn_admin_cert3(site_id);
+	        }
+	    });
+	}
+}
+
+function fn_copy(str) {
+    var input = document.body.appendChild(document.createElement("input"));
+    input.value = str;
+    input.focus();
+    input.select();
+    document.execCommand('copy');
+    input.parentNode.removeChild(input);
+    action_popup.alert("Token Copy");
+}
+
+var g_row_index = "";
+function fn_admin(row_index, site_pass) {
+	g_row_index = row_index;
+	var cert = $("#eye_cert").val()
+	if (cert == 1) {
+		var ast = "***************";
+		if ($("#pwicon"+row_index).attr("src") == "/img/eye_x_icon.png") {
+			$("#pwicon"+row_index).attr("src","/img/eye_icon.png");
+			$("#markpass"+row_index).html(ast);
+		} else {
+			$("#pwicon"+row_index).attr("src","/img/eye_x_icon.png");
+			$("#markpass"+row_index).html(site_pass);
+		}
+	} else {
+		$("#admin_pass").val("");
+	    action_popup.admin("Admin Authentication", function(res) {
+	        if (res) {
+	        	fn_admin_cert(row_index, site_pass);
+	        }
+	    });
+	}
+}
+
+function fn_admin_cert(row_index, site_pass) {
+	if (g_row_index == row_index) {
+		var param = new Object();
+		param.admin_pw = $("#admin_pass").val();
+		param.row_index = row_index;
+		param.site_pass = site_pass;
+		$.ajax({
+			type: "get",
+			data: param,
+	        dataType:'json',
+			url: "/data/admin_cert",
+			success : function(data, status) {
+				var result = data.result;
+				if (result == "Certified") {
+					$("#eye_cert").val(1);
+					$("#pwicon"+data.row_index).attr("src","/img/eye_x_icon.png");
+					$("#markpass"+data.row_index).html(data.site_pass);
+				} else {
+					action_popup.alert(result);
+				}
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+				console.log('error while post');
+			}
+		});
+	}
+}
+
+function fn_admin_cert2(row_index, site_id, site_aid, site_pass, site_url) {
+	if (g_pw_row_index == row_index) {
+		var param = new Object();
+		param.admin_pw = $("#pw_admin_pass").val();
+		param.row_index = row_index;
+		param.site_id = site_id;
+		param.site_aid = site_aid;
+		param.site_pass = site_pass;
+		param.site_url = site_url;
+		$.ajax({
+			type: "get",
+			data: param,
+	        dataType:'json',
+			url: "/data/admin_cert",
+			success : function(data, status) {
+				var result = data.result;
+				if (result == "Certified") {
+					$("#eye_cert").val(1);
+					fn_pw(data.row_index, data.site_id, data.site_aid, data.site_pass, data.site_url);
+				} else {
+					action_popup.alert(result);
+				}
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+				console.log('error while post');
+			}
+		});
+	}
+}
+
+function fn_admin_cert3(site_id) {
+
+	if (g_siteId == site_id) {
+		var param = new Object();
+		param.admin_pw = $("#md_admin_pass").val();
+		param.site_id = site_id;
+		$.ajax({
+			type: "get",
+			data: param,
+	        dataType:'json',
+			url: "/data/admin_cert3",
+			success : function(data, status) {
+				var result = data.result;
+				if (result == "Certified") {
+					$("#eye_cert").val(1);
+					fn_modify(data.site_id);
+				} else {
+					action_popup.alert(result);
+				}
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+				console.log('error while post');
+			}
+		});
+	}
+}
+
+var g_pw_row_index = "";
+function fn_pw(row_index, site_id, site_aid, site_pass, site_url) {
+	g_pw_row_index = row_index;
+	var cert = $("#eye_cert").val();
+	if (cert == 1) {
+		$("#site_url").val(site_url);
+		$("#site_aid").val(site_aid);
+		$("#site_pass").val(site_pass);
+		action_popup2.modify("Changing Information", function(res) {
+            if (res) {
+               fn_pw_change(row_index, site_id, site_aid, site_pass, site_url);
+            }
+            return false;
+        });
+
+	} else {
+
+		$("#pw_admin_pass").val("");
+	    action_popup3.admin("Admin Authentication", function(res) {
+	        if (res) {
+		        fn_admin_cert2(row_index, site_id, site_aid, site_pass, site_url);
+	        }
+	        return false;
+	    });
+		
+	}
+}
+function fn_pw_change(row_index, site_id, site_aid, site_pass, site_url) {
+	if (g_pw_row_index == row_index) {
+		var param = new Object();
+		param.row_index = row_index;
+		param.site_id = site_id;
+		param.site_aid = $("#site_aid").val();
+		param.site_pass = $("#site_pass").val();
+		param.site_url = site_url;
+		$.ajax({
+			type: "get",
+			data: param,
+	        dataType:'json',
+			url: "/data/changepass",
+			success : function(data, status) {
+				var result = data.result;
+				if (result == "Success") {
+					$("#list_form").attr("action", "/data/list");
+					$("#list_form").submit();
+					$("#eye_cert").val(1);
+				} else {
+					action_popup.alert(result);
+				}
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+				console.log('error while post');
+			}
+		});
+	}
+}
+// /*]]*/
+</script>
+</head>
+<div layout:fragment="content">
+
+    <div class="main_frame">
+
+		<form role="form" id="list_form" method="post">
+		<input type="hidden" th:name="id_data" th:id="id_data" />
+		<input type="hidden" th:name="auth" th:id="auth" th:value="${auth}"/>
+		<input type="hidden" th:name="id" th:id="id" />
+		<input type="hidden" th:name="pageSize" th:id="pageSize" />
+		<input type="hidden" th:name="page" th:id="page" />
+		<input type="hidden" th:id="clipboard" />
+		<input type="hidden" th:name="eye_cert" th:id="eye_cert" th:value="${eye_cert}"/>
+        <hr class="top_line">
+        <p class="main_title">Sites</p>
+        <div th:if="${session_auth == 1}">
+            <input type="button" class="btn_new" th:attr="onclick=|fn_add()|" />
+            <span class="selectbox_sites">
+				<span class="form-group page-select">
+		            <select class="form-control pagination" id="dataPageSizeSelect">
+		                <option th:each="pageSize : ${pageSizes}" th:text="${pageSize}" th:value="${pageSize}"
+		                        th:selected="${pageSize} == ${selectedPageSize}"></option>
+		            </select>
+		        </span>
+		    </span>
+        </div>
+        <div class="btn_seperator" />
+        <!--        <br/>-->
+        <!-- tables -->
+        <div class="table_space">
+            <table th:id="id_table">
+                <thead>
+                	<tr>
+	                    <th class="table_name">Name</th>
+	                    <th class="table_url">URL</th>
+	                    <th class="table_tokenid">Token</th>
+	                    <th class="table_copy">Copy</th>
+	                    <th class="table_id">ID</th>
+	                    <th class="table_pw">Password</th>
+	                    <th class="table_opt">Option</th>
+	                    <th class="table_tm">Creation Time</th>
+	            	</tr>
+                </thead>
+                <tbody>
+	               	<div th:if="${list != null and !list.isEmpty()}">
+                	<tr th:each="item : ${list}">
+						<td th:if="${session_auth == 1}" th:text="${item.name}" th:attr="onclick=|fn_modify('${item.id}')|" class="td_hover"></td>
+						<td th:unless="${session_auth == 1}" th:text="${item.name}"></td>
+						<td th:text="${item.url}" th:attr="onclick=|fn_link('${item.name}', '${item.url}', '${item.token}', '${item.aid}', '${item.apw}')|" class="td_hover"></td>
+						<td><span th:if="${item.token != null and item.token != ''}">********************************************************************...</span></td>
+						<td><span th:if="${item.token != null and item.token != ''}"><img alt="token" th:src="@{/img/token_icon.png}" class="token_img" th:attr="onclick=|fn_copy('${item.token}')|" /></span></td>
+						<td th:text="${item.aid}" th:id="|nomarkid${itemStat.index}|"></td>
+						<td><span th:if="${item.apw != null and item.apw != ''}" th:id="|markpass${itemStat.index}|">***************</span></td>
+						<td th:if="${session_auth == 1}">
+						   <span th:if="${item.apw != null and item.apw != ''}"><img alt="token" th:src="@{/img/eye_icon.png}" class="btn_eye" th:attr="onclick=|fn_admin(${itemStat.index}, '${item.apw}')|" th:id="|pwicon${itemStat.index}|" /></span>
+						   <span th:if="${item.apw != null and item.apw != ''}"><img alt="token" th:src="@{/img/eye_dot.png}" class="btn_dot" th:attr="onclick=|fn_pw(${itemStat.index}, ${item.id}, '${item.aid}', '${item.apw}', '${item.url}')|" th:id="|doticon${itemStat.index}|" /></span>
+						</td>
+						<td th:unless="${session_auth == 1}" class="td_option_pos">
+						   <span th:if="${item.apw != null and item.apw != ''}"><img alt="token" th:src="@{/img/eye_icon.png}" class="btn_eye" th:attr="onclick=|fn_admin(${itemStat.index}, '${item.apw}')|" th:id="|pwicon${itemStat.index}|" /></span>
+						</td>
+						<td th:text="${#temporals.format(item.time, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                    </tr>
+                    </div>
+	               	<div th:unless="${list != null and !list.isEmpty()}">
+	               	<tr>
+	               		<td colspan="7">no data</td>
+	               	</tr>
+	               	</div>
+      
+                </tbody>
+            </table>
+        </div>
+
+	    <div class="row">
+<!-- 	        <div class="form-group col-md-1 page-select"> -->
+<!-- 	            <select class="form-control pagination" id="dataPageSizeSelect"> -->
+<!-- 	                <option th:each="pageSize : ${pageSizes}" th:text="${pageSize}" th:value="${pageSize}" -->
+<!-- 	                        th:selected="${pageSize} == ${selectedPageSize}"></option> -->
+<!-- 	            </select> -->
+<!-- 	        </div> -->
+<!-- 	        <div th:if="${list.totalPages != 1}" class="form-group col-md-11 pagination-container"> -->
+	        <div class="pager_center">
+		        <div th:if="${list.totalPages != 1}" class="form-group pagination-container">
+		            <ul class="pagination">
+		                <li th:class="${list.number == 0} ? disabled">
+		                    <a class="pageLink" th:href="@{/data/list/(pageSize=${selectedPageSize}, page=1)}">&laquo;</a>
+		                </li>
+		                <li th:class="${list.number == 0} ? disabled">
+		                    <a class="pageLink" th:href="@{/data/list/(pageSize=${selectedPageSize}, page=${list.number})}">&larr;</a>
+		                </li>
+		                <li th:class="${list.number == (page - 1)} ? 'active pointer-disabled'"
+		                    th:each="page : ${#numbers.sequence(pager.startPage, pager.endPage)}">
+		                    <a class="pageLink" th:href="@{/data/list/(pageSize=${selectedPageSize}, page=${page})}"
+		                       th:text="${page}"></a>
+		                </li>
+		                <li th:class="${list.number + 1 == list.totalPages} ? disabled">
+		                    <a class="pageLink"
+		                       th:href="@{/data/list/(pageSize=${selectedPageSize}, page=${list.number + 2})}">&rarr;</a>
+		                </li>
+		                <li th:class="${list.number + 1 == list.totalPages} ? disabled">
+		                    <a class="pageLink"
+		                       th:href="@{/data/list/(pageSize=${selectedPageSize}, page=${list.totalPages})}">&raquo;</a>
+		                </li>
+		            </ul>
+		        </div>
+	        </div>
+	    </div>
+        
+		</form>
+		
+    </div>
+	<!-- admin인증 모달을 쓸 페이지에 추가 start-->
+	<section class="modal modal-section type-admin">
+	    <div class="enroll_box_admin">
+	        <p class="menu_msg_admin"></p>
+	    </div>
+	    <div class="modal_input">
+	        <input class="custom_input_admin" type="search" size="60" placeholder="Admin Password" onfocus="this.placeholder=''" onblur="this.placeholder='Name'" name="admin_pass" th:id="admin_pass">
+	    </div>
+	    <div class="enroll_btn">
+	        <input type="button" class="btn_ok_alert btn_ok" />
+	        <input type="button" class="btn_cancel_alert modal_close" />
+	    </div>
+	</section>
+	<!-- 비밀번호 admin 인증 모달을 쓸 페이지에 추가 start-->
+    <section class="modal3 modal-section type-admin3">
+        <div class="enroll_box_admin">
+            <p class="menu_msg_admin"></p>
+        </div>
+        <div class="modal_input">
+            <input class="custom_input_admin" type="search" size="60" placeholder="Admin Password" onfocus="this.placeholder=''" onblur="this.placeholder='Name'" name="pw_admin_pass" th:id="pw_admin_pass">
+        </div>
+        <div class="enroll_btn">
+            <input type="button" class="btn_ok_alert btn_ok" />
+            <input type="button" class="btn_cancel_alert modal_close3" />
+        </div>
+    </section>
+	<!-- 사이트수정 admin 인증 모달을 쓸 페이지에 추가 start-->
+    <section class="modal4 modal-section type-admin4">
+        <div class="enroll_box_admin">
+            <p class="menu_msg_admin"></p>
+        </div>
+        <div class="modal_input">
+            <input class="custom_input_admin" type="search" size="60" placeholder="Admin Password" onfocus="this.placeholder=''" onblur="this.placeholder='Name'" name="md_admin_pass" th:id="md_admin_pass">
+        </div>
+        <div class="enroll_btn">
+            <input type="button" class="btn_ok_alert btn_ok" />
+            <input type="button" class="btn_cancel_alert modal_close4" />
+        </div>
+    </section>
+    <!-- Modify 수정 모달을 쓸 페이지에 추가 start-->
+    <section class="modal2 modal-section type-modify">
+        <div class="enroll_box_modify">
+            <p class="menu_msg_admin"></p>
+        </div>
+        <div class="modal_input">
+            <input class="custom_input_modify" type="search" size="60" placeholder="Website" onfocus="this.placeholder=''" onblur="this.placeholder='Name'" name="site_url" th:id="site_url" readonly>
+        </div>
+        <div class="modal_input">
+            <input class="custom_input_modify" type="search" size="60" placeholder="Name" onfocus="this.placeholder=''" onblur="this.placeholder='Name'" name="site_aid" th:id="site_aid">
+        </div>
+        <div class="modal_input">
+            <input class="custom_input_modify" type="search" size="60" placeholder="Password" onfocus="this.placeholder=''" onblur="this.placeholder='Name'" name="site_pass" th:id="site_pass">
+        </div>
+         <div class="enroll_box_modify_bottom">
+            <p class="menu_msg_modify">저장하려는 비밀번호가 일치하는지 확인하세요.</p>
+        </div>
+        <div class="enroll_btn">
+            <input type="button" class="btn_ok_alert btn_ok" />
+            <input type="button" class="btn_cancel_alert modal_close2" />
+        </div>
+    </section>	
+</div>
+</html>

@@ -1,0 +1,296 @@
+html {
+    height: 100%
+}
+
+body {
+    margin: 0;
+    background-color: #131417;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.maindiv {
+    line-height: 80px;
+    width: 700px;
+    text-align: center;
+
+}
+
+.custom_input {
+    width: 280px;
+    height: 45px;
+    margin: 0;
+    text-indent: 2em;
+    border: 0;
+    background: #e3e4e8;
+    border-radius: 4px;
+    font: inherit;
+}
+.custom_input_pw {
+    width: 280px;
+    height: 43px;
+    margin: 0;
+    text-indent: 2em;
+    border: 0;
+    background: #e3e4e8;
+    border-radius: 4px;
+    font: inherit;
+}
+
+.input_div {
+
+    text-align: center;
+}
+
+.button {
+    -webkit-appearance: none;
+    font-size: 1rem;
+    text-shadow: none;
+    line-height: 1.2;
+    display: inline-block;
+    padding: 10px 16px;
+    margin: 0 10px 0 0;
+    position: relative;
+    border-radius: 4px;
+    border: 4px solid transparent;
+    background: #444857;
+    color: white;
+    cursor: pointer;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    text-decoration: none !important;
+    text-align: center;
+    font-weight: normal !important;
+    text-decoration: none;
+}
+
+.button:hover {
+    background: #2baefa;
+    color: #fff;
+    font-weight: bold;
+}
+
+.description {
+
+    width: 100%;
+    color: #cedaf6;
+    font-size: 12px;
+    padding-left: 220px;
+    opacity: 0.2;
+    top: -30px;
+}
+
+img.cpuimg {
+    animation: rotate_image 10s linear infinite;
+    transform-origin: 50% 50%;
+    opacity: 0.1;
+    position: absolute;
+}
+
+@keyframes rotate_image {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/****modal*************************************************/
+
+.dimLayer{
+	display: block;
+	width: 100%;
+	background-color: rgba(0, 0, 0, 0.5);
+	position: fixed;
+	left: 0;
+	top: 0px;
+	margin: 0;
+	padding: 0;
+	z-index: 9998;
+}
+.modal{
+	width: 370px;
+	height: 220px;
+	border-radius: 10px;
+	box-sizing: border-box;
+	box-shadow:0 5px 20px rgba(0, 0, 0, 0.8);
+	text-align: center;
+}
+.modal.modal_big{
+	width: 460px;
+	height: 350px;
+}
+.modal-section{
+	background: #1b242d;
+	box-sizing: border-box;
+	display: none;
+	position: absolute;
+	top: 50%;left: 50%;-webkit-transform: translate(-50%, -50%);
+	-ms-transform: translate(-50%, -50%);
+	-moz-transform: translate(-50%, -50%);
+	-o-transform: translate(-50%, -50%);
+	transform: translate(-50%, -50%);
+	display: none;z-index: 9999;
+}
+.menu_msg{
+	position: relative;
+	font-size: 14px;
+	font-weight: 500;
+	color: #e2e2e2;
+}
+.enroll_box p{
+	position: relative;
+	padding-bottom:10px;
+}
+.menu_msg_admin{
+	position: relative;
+	font-size: 14px;
+	font-weight: 500;
+	color: #e2e2e2;
+	padding-top: 10px
+}
+.menu_msg_modify{
+	position: relative;
+	font-size: 12px;
+	font-weight: 500;
+	color: #b2b2b2;
+	top: -4px;
+}
+.enroll_box_modify{
+	padding-top: 17px;
+	padding-bottom: 10px;
+}
+.enroll_box_admin{
+	padding-top: 45px;
+}
+.enroll_box_admin p{
+	position: relative;
+	padding-bottom:10px;
+}
+
+.custom_input_admin {
+	width: 200px;
+	height: 40px;
+	margin: 0;
+	padding: 0.4em 0.4em 0.4em 0.4em;
+	text-indent: 2em;
+	border: 0;
+	background: #e3e4e8;
+	border-radius: 4px;
+	font: inherit;
+}
+.custom_input_modify {
+	width: 400px;
+	height: 40px;
+	margin: 0;
+	padding: 0.4em 0.4em 0.4em 0.4em;
+	text-indent: 2em;
+	border: 0;
+	background: #e3e4e8;
+	border-radius: 4px;
+	font: inherit;
+}
+.modal_input{
+	padding-bottom: 25px;
+}
+
+
+
+input.btn_ok_alert {
+    background-image: url("../img/button_alert_ok.png");
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-position: 0px 0px;
+    border: none;
+    cursor: pointer;
+    width: 82px;
+    height: 37px;
+    padding-left: 16px;
+    vertical-align: middle;
+}
+
+input.btn_ok_alert:hover {
+    background-image: url("../img/button_alert_ok_color.png");
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-position: 0px 0px;
+    border: none;
+    cursor: pointer;
+    width: 82;
+    height: 37px;
+    padding-left: 16px;
+    vertical-align: middle;
+}
+input.btn_cancel_alert {
+    background-image: url("../img/button_alert_cancel.png");
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-position: 0px 0px;
+    border: none;
+    cursor: pointer;
+    width: 82px;
+    height: 37px;
+    padding-left: 16px;
+    vertical-align: middle;
+}
+
+input.btn_cancel_alert:hover {
+    background-image: url("../img/button_alert_cancel_color.png");
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-position: 0px 0px;
+    border: none;
+    cursor: pointer;
+    width: 82;
+    height: 37px;
+    padding-left: 16px;
+    vertical-align: middle;
+}
+
+/************* login ***********/
+input.btn_invalid {
+    background-image: url("../img/login_invalid.png");
+    border: none;
+    cursor: pointer;
+    width: 167px;
+    height: 36px;
+}
+
+input.btn_invalid:hover {
+    background-image: url("../img/login_invalid_hover.png");
+    border: none;
+    width: 167px;
+    height: 36px;
+    cursor: pointer;
+}
+input.btn_init {
+    background-image: url("../img/login_init.png");
+    border: none;
+    width: 167px;
+    height: 36px;
+    cursor: pointer;
+}
+
+input.btn_init:hover {
+    background-image: url("../img/login_init_hover.png");
+    border: none;
+    width: 167px;
+    height: 36px;
+    cursor: pointer;
+}
+input.btn_3times {
+    background-image: url("../img/login_3times.png");
+    border: none;
+    width: 345px;
+    height: 36px;
+    cursor: pointer;
+}
+
+input.btn_3times:hover {
+    background-image: url("../img/login_3times_hover.png");
+    border: none;
+    width: 345px;
+    height: 36px;
+    cursor: pointer;
+}

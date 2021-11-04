@@ -1,0 +1,331 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/default}">
+<!--headerFragment 선언-->
+<header th:fragment="headerFragment">
+
+<!-- index.html 고유 스크립트 추가 -->
+<script th:inline="javascript">
+/*<![CDATA[*/
+// var result =/*[[${msg}]]*/ 'default';
+$(document).ready(function() {
+	$(".modal_close").on("click", function(e) {
+		action_popup.close(this);
+	});
+    $(".modal_close2").on("click", function() {
+		action_popup2.close(this);
+	});
+    $(".modal_close3").on("click", function() {
+		action_popup3.close(this);
+	});
+    $(".modal_close4").on("click", function() {
+		action_popup4.close(this);
+	});
+	$("tr").not(':first').hover(
+		function() {
+	        $(this).css("background", "#2b2e36");
+	    },
+	    function() {
+	        $(this).css("background", "");
+	    }
+	);
+});
+function fn_data() {
+	$("#header_form").attr("action", "/data/list");
+	$("#header_form").submit();
+}
+function fn_user() {
+	$("#header_form").attr("action", "/user/list");
+	$("#header_form").submit();
+}
+function fn_logout() {
+	$("#header_form").attr("action", "/logout");
+	$("#header_form").submit();
+}
+
+/**
+ *  alert, confirm 대용 팝업 메소드 정의 <br/>
+ *  timer : 애니메이션 동작 속도 <br/>
+ *  alert : 경고창 <br/>
+ *  confirm : 확인창 <br/>
+ *  open : 팝업 열기 <br/>
+ *  close : 팝업 닫기 <br/>
+ */
+var action_popup = {
+    timer: 200,
+    confirm: function(txt, callback) {
+        if (txt == null || txt.trim() == "") {
+            console.warn("confirm message is empty.");
+            return;
+        } else if (callback == null || typeof callback != 'function') {
+            console.warn("callback is null or not function.");
+            return;
+        } else {
+            $(".type-confirm .btn_ok").on("click", function() {
+                $(this).unbind("click");
+                callback(true);
+                action_popup.close(this);
+            });
+            this.open("type-confirm", txt);
+        }
+    },
+    admin: function(txt, callback) {
+        if (txt == null || txt.trim() == "") {
+            console.warn("admin 확인 message is empty.");
+            return;
+        } else if (callback == null || typeof callback != 'function') {
+            console.warn("callback is null or not function.");
+            return;
+        } else {
+            $(".type-admin .btn_ok").on("click", function() {
+                $(this).unbind("click");
+                callback(true);
+                action_popup.close(this);
+            });
+            this.open("type-admin", txt);
+        }
+    },
+    
+//     modify: function(txt, callback) {
+//         if (txt == null || txt.trim() == "") {
+//             console.warn("Modify message is empty.");
+//             return;
+//         } else if (callback == null || typeof callback != 'function') {
+//             console.warn("callback is null or not function.");
+//             return;
+//         } else {
+//             $(".type-modify .btn_ok").on("click", function() {
+//                 $(this).unbind("click");
+//                 callback(true);
+//                 action_popup.close(this);
+//             });
+//             this.open("type-modify", txt);
+//         }
+//     },
+
+    alert: function(txt) {
+        if (txt == null || txt.trim() == "") {
+            console.warn("confirm message is empty.");
+            return;
+        } else {
+            this.open("type-alert", txt);
+        }
+    },
+
+    open: function(type, txt) {
+        var popup = $("." + type);
+        if (type == "type-admin" || type == "type-modify"){
+            popup.find(".menu_msg_admin").text(txt);
+        }else{
+            popup.find(".menu_msg").text(txt);
+        }
+        $("body").append("<div class='dimLayer'></div>");
+        $(".dimLayer").css('height', $(document).height()).attr("target", type);
+        popup.fadeIn(this.timer);
+    },
+
+    close: function(target) {
+        var modal = $(target).closest(".modal-section");
+        var dimLayer;
+        if (modal.hasClass("type-confirm")) {
+            dimLayer = $(".dimLayer[target=type-confirm]");
+        } else if (modal.hasClass("type-alert")) {
+            dimLayer = $(".dimLayer[target=type-alert]")
+        } else if (modal.hasClass("type-admin")) {
+            dimLayer = $(".dimLayer[target=type-admin]")
+        } else if (modal.hasClass("type-modify")) {
+            dimLayer = $(".dimLayer[target=type-modify]")
+        } else {
+            console.warn("close unknown target.")
+            return;
+        }
+        modal.fadeOut(this.timer);
+        setTimeout(function() {
+            dimLayer != null ? dimLayer.remove() : "";
+        }, this.timer);
+    }
+}
+
+var action_popup2 = {
+         
+    timer: 200,
+    modify: function(txt, callback) {
+        
+        if (txt == null || txt.trim() == "") {
+            console.warn("Modify message is empty.");
+            return;
+        } else if (callback == null || typeof callback != 'function') {
+            console.warn("callback is null or not function.");
+            return;
+        } else {
+            $(".type-modify .btn_ok").on("click", function() {
+                $(this).unbind("click");
+                callback(true);
+                action_popup2.close(this);
+            });
+            this.open("type-modify", txt);
+        }
+    },
+    
+    open: function(type, txt) {
+        var popup = $("." + type);
+        popup.find(".menu_msg_admin").text(txt);
+        $("body").append("<div class='dimLayer'></div>");
+        $(".dimLayer").css('height', $(document).height()).attr("target", type);
+        popup.fadeIn(this.timer);
+    },
+
+    close: function(target) {
+        var modal = $(target).closest(".modal-section");
+        var dimLayer;
+        if (modal.hasClass("type-modify")) {
+            dimLayer = $(".dimLayer[target=type-modify]")
+        } else {
+            console.warn("close unknown target.")
+            return;
+        }
+        modal.fadeOut(this.timer);
+        setTimeout(function() {
+            dimLayer != null ? dimLayer.remove() : "";
+        }, this.timer);
+    }
+}
+ 
+var action_popup3 = {
+         
+    timer: 200,
+    admin: function(txt, callback) {
+        if (txt == null || txt.trim() == "") {
+            console.warn("Admin message is empty.");
+            return;
+        } else if (callback == null || typeof callback != 'function') {
+            console.warn("callback is null or not function.");
+            return;
+        } else {
+            $(".type-admin3 .btn_ok").on("click", function() {
+                $(this).unbind("click");
+                callback(true);
+                action_popup3.close(this);
+            });
+            this.open("type-admin3", txt);
+        }
+    },
+    
+    open: function(type, txt) {
+        var popup = $("." + type);
+
+            popup.find(".menu_msg_admin").text(txt);
+
+        $("body").append("<div class='dimLayer'></div>");
+        $(".dimLayer").css('height', $(document).height()).attr("target", type);
+        popup.fadeIn(this.timer);
+    },
+
+    close: function(target) {
+        var modal = $(target).closest(".modal-section");
+        var dimLayer;
+        if (modal.hasClass("type-admin3")) {
+            dimLayer = $(".dimLayer[target=type-admin3]")
+        } else {
+            console.warn("close unknown target.")
+            return;
+        }
+        modal.fadeOut(this.timer);
+        setTimeout(function() {
+            dimLayer != null ? dimLayer.remove() : "";
+        }, this.timer);
+    }
+}
+ 
+ var action_popup4 = {
+          
+     timer: 200,
+     admin: function(txt, callback) {
+         if (txt == null || txt.trim() == "") {
+             console.warn("Admin message is empty.");
+             return;
+         } else if (callback == null || typeof callback != 'function') {
+             console.warn("callback is null or not function.");
+             return;
+         } else {
+             $(".type-admin4 .btn_ok").on("click", function() {
+                 $(this).unbind("click");
+                 callback(true);
+                 action_popup4.close(this);
+             });
+             this.open("type-admin4", txt);
+         }
+     },
+     
+     open: function(type, txt) {
+         var popup = $("." + type);
+
+             popup.find(".menu_msg_admin").text(txt);
+
+         $("body").append("<div class='dimLayer'></div>");
+         $(".dimLayer").css('height', $(document).height()).attr("target", type);
+         popup.fadeIn(this.timer);
+     },
+
+     close: function(target) {
+         var modal = $(target).closest(".modal-section");
+         var dimLayer;
+         if (modal.hasClass("type-admin4")) {
+             dimLayer = $(".dimLayer[target=type-admin4]")
+         } else {
+             console.warn("close unknown target.")
+             return;
+         }
+         modal.fadeOut(this.timer);
+         setTimeout(function() {
+             dimLayer != null ? dimLayer.remove() : "";
+         }, this.timer);
+     }
+ }
+/*]]*/
+</script>
+<form method="post" id="header_form">
+<input type="hidden" th:name="session_id" th:id="session_id" th:value="${session_id}"/>
+<input type="hidden" th:name="session_email" th:id="session_email" th:value="${session_email}"/>
+<input type="hidden" th:name="session_auth" th:id="session_auth" th:value="${session_auth}"/>
+</form>
+<div class="top_body">
+    <div class="top_body_inner">
+        <span class="top_body_inner_item logo">
+            <img alt="로고" th:src="@{/img/km_logo_small_new.png}" />
+        </span>
+        <div class="btn_pos">
+            <span th:if="${session_auth == 1}">
+                <span><img alt="user" th:src="@{/img/user_icon.png}" /></span>
+                <span class="user_nm" th:text="${session_email}"></span>
+                <span class="user_list"><input type="button" alt="list" class="btn_list" th:attr="onclick=|fn_data()|" th:title="데이터" /></span>
+                <span class="user_setting"><input type="button" alt="settings" class="btn_settings" th:attr="onclick=|fn_user()|" th:title="사용자관리" /></span>
+                <span><input type="button" alt="logout" class="btn_logout" th:attr="onclick=|fn_logout()|" th:title="로그아웃" /></span>
+            </span>
+            <span th:unless="${session_auth == 1}">
+                <span><img alt="user" th:src="@{/img/user_icon.png}" /></span>
+                <span class="user_nm" th:text="${session_email}"></span>
+                <span><input type="button" alt="logout" class="btn_logout" th:attr="onclick=|fn_logout()|" th:title="로그아웃" /></span>
+            </span>
+        </div>
+    </div>
+</div>
+<!-- confirm 모달을 쓸 페이지에 추가 start-->
+<section class="modal modal-section type-confirm">
+    <div class="enroll_box">
+        <p class="menu_msg"></p>
+    </div>
+    <div class="enroll_btn">
+        <input type="button" class="btn_ok_alert btn_ok" />
+        <input type="button" class="btn_cancel_alert modal_close" />
+    </div>
+</section>
+<!-- alert 모달을 쓸 페이지에 추가 start-->
+<section class="modal modal-section type-alert">
+    <div class="enroll_box">
+        <p class="menu_msg"></p>
+    </div>
+    <div class="enroll_btn">
+        <input type="button" class="btn_ok_alert modal_close" />
+    </div>
+</section>
+</header>
+</html>

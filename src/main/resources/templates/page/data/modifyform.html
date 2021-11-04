@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/default}">
+
+<head>
+<script th:inline="javascript">
+/*<![CDATA[*/
+$(document).ready(function() {
+    $(document).on("click", "#btn_modify", function() {
+        action_popup.confirm("Are you sure modify it?", function(res) {
+            if (res) {
+               fn_modify();
+            }
+        })
+    });
+    $(document).on("click", "#btn_delete", function() {
+        action_popup.confirm("Delete?", function(res) {
+            if (res) {
+            	fn_delete();
+            }
+        })
+    });
+
+    $(document).on("click", "#alert", function() {
+        action_popup.alert("저장되었습니다.!!");
+    });
+
+//     $(".modal_close").on("click", function() {
+//         action_popup.close(this);
+//     });
+	init();
+});
+
+function init() {
+}
+
+function fn_modify() {
+	var name = $("input[name=name]");
+	if (name.val() == "" || name.val() == null) {
+		action_popup.alert("input name");
+		name.focus();
+		return;
+	} else {
+		name.val($.trim(name.val()))
+	}
+	$("#modify_form").attr("action", "/data/modify");
+	$("#pageSize").val($("#pageSize").val().slice(9).replace("]",""));
+	$("#page").val(parseInt($("#page").val().slice(9).replace("]","")) + 1);
+    $("#modify_form").submit();
+}
+
+function fn_delete() {
+	$("#modify_form").attr("action", "/data/delete");
+    $("#modify_form").submit();
+}
+
+function fn_cancel() {
+	$("#pageSize").val($("#pageSize").val().slice(9).replace("]",""));
+	$("#page").val(parseInt($("#page").val().slice(9).replace("]","")) + 1);
+	$("#modify_form").attr("action", "/data/list");
+    $("#modify_form").submit();
+}
+/*]]*/
+</script>
+</head>
+
+<div layout:fragment="content">
+
+    <div class="main_frame">
+
+		<form role="form" id="modify_form" method="post">
+		<input type="hidden" th:name="id" th:id="id" th:value="${id}">
+		<input type="hidden" th:name="auth" th:id="auth" th:value="${auth}">
+		<input type="hidden" th:name="pageSize" th:id="pageSize" th:value="${pageSize}">
+		<input type="hidden" th:name="page" th:id="page" th:value="${page}">
+        <hr class="top_line">
+        <!--table-->
+        <p class="main_title">Sites</p>
+        <div class="maindiv">
+            <div class="grid">
+               
+                <div class="grid_item_left">
+                   <img alt="" th:src="@{/img/left_info.png}" class="space_img" /> 
+                   <div class="space_text_01">Modify Page </div>    
+                   <div class="space_text_02"><p>Modify Endpoint Information</p></div>  
+                   <div class="space_text_03">This page is Modify page for registered endpoint</div>  
+                </div>
+                <div class="grid_item_right">
+					<input class="custom_input" type="search" size="60" placeholder="Name" onfocus="this.placeholder=''" onblur="this.placeholder='Name'" th:name="name" th:required="required" th:value="${name}">
+					<input class="custom_input" type="search" size="60" placeholder="URL:Port" onfocus="this.placeholder=''" onblur="this.placeholder='URL:Port'" th:name="url" th:value="${url}">
+					<input class="custom_input" type="search" size="60" placeholder="Token" onfocus="this.placeholder=''" onblur="this.placeholder='Token'" th:name="token" th:value="${token}">
+					<input class="custom_input" type="search" size="60" placeholder="ID" onfocus="this.placeholder=''" onblur="this.placeholder='ID'" th:name="aid" th:value="${aid}">
+					<input class="custom_input" type="password" size="60" placeholder="Password" onfocus="this.placeholder=''" onblur="this.placeholder='Password'" th:name="apw" th:value="${apw}">
+					
+					<div class="new_button_pos_no_admin">
+						<span>
+<!-- 							<input type="button" class="btn_modify" th:attr="onclick=|fn_modify()|" th:id="btn_modify" /> -->
+							<input type="button" class="btn_modify" th:id="btn_modify" />
+							<input type="button" class="btn_delete" th:id="btn_delete" />
+							<input type="button" class="btn_cancel" th:attr="onclick=|fn_cancel()|" />
+						</span>
+					</div>
+                </div>
+                
+            </div>
+        </div>
+		</form>
+    </div>
+</div>
+</html>

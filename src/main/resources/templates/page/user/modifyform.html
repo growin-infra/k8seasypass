@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/default}">
+
+<head>
+<script th:inline="javascript">
+/*<![CDATA[*/
+$(document).ready(function() {
+    $(document).on("click", "#btn_modify", function() {
+        action_popup.confirm("Modify?", function(res) {
+            if (res) {
+               fn_modify();
+            }
+        })
+    });
+    $(document).on("click", "#btn_delete", function() {
+        action_popup.confirm("Delete?", function(res) {
+            if (res) {
+               fn_delete();
+            }
+        })
+    });
+
+    $(document).on("click", "#alert", function() {
+        action_popup.alert("저장되었습니다.!!");
+    });
+
+	init();
+});
+
+function init() {
+
+	var auth = $("#auth").val();
+	if (auth == 1) {
+		$('input:checkbox[id="admin_chk"]').attr("checked", true);
+	} else {
+		$('input:checkbox[id="admin_chk"]').attr("checked", false);
+	}
+	
+}
+
+function fn_modify() {
+	var email = $("input[name=email]");
+	if (email.val() == "" || email.val() == null) {
+		action_popup.alert("input email");
+		email.blur();
+		return;
+	} else {
+		email.val($.trim(email.val()))
+	}
+// 	$("#modify_form").attr("action", "/user/modify");
+//     $("#modify_form").submit();
+
+	$("#pageSize").val($("#pageSize").val().slice(9).replace("]",""));
+	$("#page").val(parseInt($("#page").val().slice(9).replace("]","")) + 1);
+    var param = new Object();
+	param = $("#modify_form").serialize();
+	$.ajax({
+		type: "get",
+		data: param,
+        dataType:'json',
+		url: "/user/modify",
+		success : function(data, status) {
+			var result = data.result;
+			if (result == "Successfully") {
+// 				fn_cancel();
+				fn_cancel2(data.pageSize,data.page);
+			} else {
+				action_popup.alert(result);
+			}
+		},
+		error: function(jqXHR, textStatus, errorThrown) {
+			console.log('error while post');
+		}
+	});
+}
+
+function fn_delete() {
+	$("#modify_form").attr("action", "/user/delete");
+    $("#modify_form").submit();
+}
+
+function fn_cancel() {
+	$("#pageSize").val($("#pageSize").val().slice(9).replace("]",""));
+	$("#page").val(parseInt($("#page").val().slice(9).replace("]","")) + 1);
+	$("#modify_form").attr("action", "/user/list");
+    $("#modify_form").submit();
+}
+
+function fn_cancel2(pageSize,page) {
+	$("#pageSize").val(pageSize);
+	$("#page").val(page);
+	$("#modify_form").attr("action", "/user/list");
+    $("#modify_form").submit();
+}
+function fn_chk(chk) {
+	if (chk.checked) {
+		$("#auth").val(1);
+	} else {
+		$("#auth").val(0);
+	}
+}
+/*]]*/
+</script>
+</head>
+
+<div layout:fragment="content">
+	<div class="tab_main" style="text-align:left">
+		<form role="form" id="modify_form" method="post">
+		<input type="hidden" th:name="id" th:id="id" th:value="${id}">
+		<input type="hidden" name="auth" id="auth" th:value="${auth}">
+		<input type="hidden" th:name="pageSize" th:id="pageSize" th:value="${pageSize}">
+		<input type="hidden" th:name="page" th:id="page" th:value="${page}">
+
+	    <div class="main_frame">
+	        <hr class="top_line">
+			<p class="main_title">User</p>
+	        
+	        <div class="maindiv">
+	            <div class="grid">
+	               
+	                <div class="grid_item_left">
+	                    <img alt="" th:src="@{/img/left_pencel.png}" class="space_img" /> 
+	                    <div class="space_text_01">Modify User </div>    
+	                    <div class="space_text_02"><p>Modify User for K8S EasyPass</p></div>  
+	                    <div class="space_text_03">This page is Modify page for created user. </div>  
+	                    <div class="space_text_03">If Check administrator check box, authorize Administrator. </div>  
+	                </div>
+	                <div class="grid_item_right">     
+                        <input class="custom_input" type="search" size="60" placeholder="Email" onfocus="this.placeholder=''" onblur="this.placeholder='Eamil'" name="email" th:value="${email}" readonly>
+                        <input class="custom_input" type="password" size="60" placeholder="Password" onfocus="this.placeholder=''" onblur="this.placeholder='Password'" name="pass" th:value="${pass}">
+                        
+                        <div th:if="${id == 1}" class="checks">
+                        	<input type="checkbox" id="admin_chk" th:attr="onclick=|fn_chk(this)|" th:disabled="disabled"> 
+                          	<label for="admin_chk" class="checkbox_admin">Administrator</label> 
+                        </div>
+                        <div th:unless="${id == 1}" class="checks">
+                          	<input type="checkbox" id="admin_chk" th:attr="onclick=|fn_chk(this)|"> 
+                          	<label for="admin_chk" class="checkbox_admin">Administrator</label> 
+                        </div>
+                        <div class="new_button_pos">
+                            <span th:if="${id == 1}">
+                            	<input type="button" class="btn_modify" th:id="btn_modify" />
+                                <input type="button" class="btn_cancel" th:attr="onclick=|fn_cancel()|" />
+                            </span>
+                            <span th:unless="${id == 1}">
+                                <input type="button" class="btn_modify" th:id="btn_modify" />
+                                <input type="button" class="btn_delete" th:id="btn_delete" />
+                                <input type="button" class="btn_cancel" th:attr="onclick=|fn_cancel()|" />
+                            </span>
+                        </div>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+		</form>
+	</div>
+</div>
+</html>

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: PVC-NAME
+  namespace: APPS-NS
+spec:
+  storageClassName: NFS-NAME
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: PVC-SIZE

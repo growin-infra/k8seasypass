@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/default}">
+
+<head>
+<script th:inline="javascript">
+/*<![CDATA[*/
+$(document).ready(function() {
+    $(document).on("click", "#btn_save", function() {
+        action_popup.confirm("Save?", function(res) {
+            if (res) {
+               fn_add();
+            }
+        })
+    });
+
+    $(document).on("click", "#alert", function() {
+        action_popup.alert("저장되었습니다.!!");
+    });
+
+	init();
+});
+
+function init() {
+
+}
+
+function fn_add() {
+	var name = $("input[name=name]");
+	if (name.val() == "" || name.val() == null) {
+		action_popup.alert("input name");
+		name.focus();
+		return;
+	} else {
+		name.val($.trim(name.val()))
+	}
+	$("#add_form").attr("action", "/data/add");
+    $("#add_form").submit();
+}
+
+function fn_cancel() {
+	$("#add_form").attr("action", "/data/list");
+    $("#add_form").submit();
+}
+/*]]*/
+</script>
+</head>
+
+<div layout:fragment="content">
+
+    <div class="main_frame">
+
+		<form role="form" th:id="add_form" method="post">
+		<input type="hidden" th:name="auth" th:id="auth" th:value=0>
+        <hr class="top_line">
+        <p class="main_title">Sites</p>
+        <div class="maindiv">
+            <div class="grid">
+               
+                <div class="grid_item_left">
+                    <img alt="" th:src="@{/img/left_info.png}" class="space_img" /> 
+                    <div class="space_text_01">New Page </div>    
+                    <div class="space_text_02"><p>Create New Endpoint</p></div>  
+                    <div class="space_text_03">Name: Endpoint Name</div>  
+                    <div class="space_text_03">URL : Connect Information for Endpoint</div>  
+                    <div class="space_text_03">Token : Secret Information for Endpoint </div>  
+                    <div class="space_text_03">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;, If not registered, empty</div>  
+                    <div class="space_text_03">ID : User Name for Endpoint</div>  
+                    <div class="space_text_03">Password : Password Information for Endpoint</div>  
+                </div>
+                <div class="grid_item_right">
+					<input class="custom_input" type="search" size="60" placeholder="Name" onfocus="this.placeholder=''" onblur="this.placeholder='Name'" name="name" th:required="required">
+					<input class="custom_input" type="search" size="60" placeholder="URL:Port" onfocus="this.placeholder=''" onblur="this.placeholder='URL:Port'" name="url">
+					<input class="custom_input" type="search" size="60" placeholder="Token" onfocus="this.placeholder=''" onblur="this.placeholder='Token'" name="token">
+					<input class="custom_input" type="search" size="60" placeholder="ID" onfocus="this.placeholder=''" onblur="this.placeholder='ID'" name="aid">
+					<input class="custom_input" type="password" size="60" placeholder="Password" onfocus="this.placeholder=''" onblur="this.placeholder='Password'" name="apw">
+					
+					<div class="new_button_pos_no_admin">
+						<span>
+<!-- 							<input type="button" class="btn_save" th:attr="onclick=|fn_add()|" th:id="save"/> -->
+							<input type="button" class="btn_save" th:id="btn_save"/>
+							<input type="button" class="btn_cancel" th:attr="onclick=|fn_cancel()|" />
+						</span>
+					</div>
+                </div>
+            </div>
+        </div>
+		</form>
+    </div>
+</div>
+</html>

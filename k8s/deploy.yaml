@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: APPS-NAME
+  namespace: APPS-NS
+  labels:
+    app: APPS-NAME
+    service: APPS-NAME
+spec:
+  ports:
+    - name: http
+      port: EX-PORT
+      targetPort: IN-PORT
+  selector:
+    app: APPS-NAME
+  type: SVC-TYPE
+  sessionAffinity: ClientIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: APPS-NAME
+  namespace: APPS-NS
+  labels:
+    app: APPS-NAME
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: APPS-NAME
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: APPS-NAME
+        version: v1
+    spec:
+      containers:
+        - name: APPS-NAME
+          image: APPS-IMAGE
+          ports:
+            - containerPort: IN-PORT
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: DATE
+              value: 'DATE_STRING'
+          volumeMounts:
+          - name: APPS-NAME-data
+            mountPath: /data
+      volumes:
+        - name: APPS-NAME-data
+          persistentVolumeClaim:
+            claimName: PVC-NAME
+      imagePullSecrets:
+        - name: IMG-SECRET

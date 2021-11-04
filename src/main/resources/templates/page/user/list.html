@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/default}">
+
+<!-- index.html 고유 CSS 추가 -->
+<th:block layout:fragment="css">
+</th:block>
+
+<head>
+<script th:inline="javascript">
+/*<![CDATA[*/
+$(document).ready(function() {
+    
+	init();
+});
+
+function init() {
+}
+	
+function fn_add() {
+	$("#list_form").attr("action", "/user/addform");
+    $("#list_form").submit();
+}
+
+function fn_modify(id) {
+
+	$("#id").val(id);
+	if (id == 1) {
+// 		action_popup.alert("Administrator cannot edit.");
+		fn_modify_cert(id);
+	} else {
+		$("#pageSize").val($("#userPageSizeSelect").val());
+		$("#page").val([[${list.number}]]);
+		$("#list_form").attr("action", "/user/modifyform");
+	    $("#list_form").submit();
+	}
+}
+
+function fn_admin_cert(id) {
+	var param = new Object();
+	param.admin_pw = $("#admin_pass").val();
+	$.ajax({
+		type: "get",
+		data: param,
+        dataType:'json',
+		url: "/user/admin_cert",
+		success : function(data, status) {
+			var result = data.result;
+			if (result == "Certified") {
+				$("#id").val(id);
+				$("#pageSize").val($("#userPageSizeSelect").val());
+				$("#page").val([[${list.number}]]);
+				$("#list_form").attr("action", "/user/modifyform");
+			    $("#list_form").submit();
+			} else {
+				action_popup.alert(result);
+			}
+		},
+		error: function(jqXHR, textStatus, errorThrown) {
+			console.log('error while post');
+		}
+	});
+}
+
+function fn_modify_cert(id) {
+	var cert = $("#eye_cert").val()
+	if (cert == 1) {
+		$("#id").val(id);
+		$("#pageSize").val($("#userPageSizeSelect").val());
+		$("#page").val([[${list.number}]]);
+		$("#list_form").attr("action", "/user/modifyform");
+	    $("#list_form").submit();
+	} else {
+		$("#admin_pass").val("");
+	    action_popup.admin("Admin Authentication", function(res) {
+	        if (res) {
+	        	fn_admin_cert(id);
+	        }
+	    });
+	}
+}
+
+
+/*]]*/
+</script>
+</head>
+
+<div layout:fragment="content">
+
+    <div class="main_frame">
+
+		<form role="form" id="list_form" method="post">
+		<input type="hidden" th:name="id" th:id="id" />
+		<input type="hidden" th:name="pageSize" th:id="pageSize" />
+		<input type="hidden" th:name="page" th:id="page" />
+		<input type="hidden" th:name="eye_cert" th:id="eye_cert" th:value="${eye_cert}"/>
+        <hr class="top_line">
+        <p class="main_title">User</p>
+        <div class="maindiv_list">
+            <div class="grid">
+                <div class="grid_item_left">
+                   <img alt="" th:src="@{/img/left_list.png}" class="space_img" /> 
+                   <div class="space_text_01">User List</div>    
+                   <div class="space_text_02"><p>K8S EasyPass show user list</p></div>  
+<!--                    <div class="space_text_03">social development environment for front-end designers and developers. Build and deploy a website, show off your work, build test cases to learn and debug, and find inspiration.안녕하세요. 정확하게 안적으시면 큰일나요~~망합니다!!!</div>   -->
+                </div>
+                <div class="grid_item_right"> 
+					<div>
+			            <input type="button" class="btn_new" th:attr="onclick=|fn_add()|" />
+						<span class="selectbox_user">
+							<span class="form-group page-select">
+								<select class="form-control pagination" id="userPageSizeSelect">
+						        	<option th:each="pageSize : ${pageSizes}" th:text="${pageSize}" th:value="${pageSize}"
+						        	        th:selected="${pageSize} == ${selectedPageSize}">
+						        	</option>
+						        </select>
+						    </span>
+						</span>
+			        </div>
+						
+			        <!-- tables -->
+			        <div class="table_space">
+			            <table>
+			                <thead>
+			                	<tr>
+				                    <th class="table_list_email">Email</th>
+				                    <th class="table_list_admin">Administrator</th>
+				                    <th class="table_tm">Creation Time</th>
+				            	</tr>
+			                </thead>
+			                <tbody>
+				               	<div th:if="${list != null and !list.isEmpty()}">
+			                	<tr th:each="item : ${list}">
+<!-- 									<td th:if="${itemStat.count == 1}" th:attr="onclick=|fn_modify('${item.id}')|" class="td_hover"> -->
+									<td th:if="${item.id == 1}" th:attr="onclick=|fn_modify('${item.id}')|" class="td_hover">
+										<span><img th:class="img_user_small" th:src="@{/img/user_icon_small.png}" /></span>
+										<span th:text="${item.email}"></span>
+									</td>
+									<td th:unless="${item.id == 1}" th:attr="onclick=|fn_modify('${item.id}')|" class="td_hover">
+										<span th:text="${item.email}"></span>
+									</td>
+									<td th:text="Yes" th:if="${item.auth == 1}"></td>
+									<td th:text="No" th:unless="${item.auth == 1}"></td>
+									<td th:text="${#temporals.format(item.time, 'yyyy-MM-dd HH:mm:ss')}"></td>
+			                    </tr>
+			                    </div>
+				               	<div th:unless="${list != null and !list.isEmpty()}">
+				               	<tr>
+				               		<td colspan="3">no data</td>
+				               	</tr>
+				               	</div>
+			      
+			                </tbody>
+			            </table>
+			        </div>
+			        
+				    <div class="row">
+<!-- 						<div class="form-group col-md-2 page-select"> -->
+<!-- 				            <select class="form-control pagination" id="userPageSizeSelect"> -->
+<!-- 				                <option th:each="pageSize : ${pageSizes}" th:text="${pageSize}" th:value="${pageSize}" -->
+<!-- 				                        th:selected="${pageSize} == ${selectedPageSize}"></option> -->
+<!-- 				            </select> -->
+<!-- 				        </div> -->
+				    	<div class="pager_center">
+					        <div th:if="${list.totalPages != 1}" class="form-group pagination-container">
+					            <ul class="pagination">
+					                <li th:class="${list.number == 0} ? disabled">
+					                    <a class="pageLink" th:href="@{/user/list/(pageSize=${selectedPageSize}, page=1)}">&laquo;</a>
+					                </li>
+					                <li th:class="${list.number == 0} ? disabled">
+					                    <a class="pageLink" th:href="@{/user/list/(pageSize=${selectedPageSize}, page=${list.number})}">&larr;</a>
+					                </li>
+					                <li th:class="${list.number == (page - 1)} ? 'active pointer-disabled'"
+					                    th:each="page : ${#numbers.sequence(pager.startPage, pager.endPage)}">
+					                    <a class="pageLink" th:href="@{/user/list/(pageSize=${selectedPageSize}, page=${page})}"
+					                       th:text="${page}"></a>
+					                </li>
+					                <li th:class="${list.number + 1 == list.totalPages} ? disabled">
+					                    <a class="pageLink"
+					                       th:href="@{/user/list/(pageSize=${selectedPageSize}, page=${list.number + 2})}">&rarr;</a>
+					                </li>
+					                <li th:class="${list.number + 1 == list.totalPages} ? disabled">
+					                    <a class="pageLink"
+					                       th:href="@{/user/list/(pageSize=${selectedPageSize}, page=${list.totalPages})}">&raquo;</a>
+					                </li>
+					            </ul>
+					        </div>
+						</div>
+				    </div>
+				</div>
+			</div>
+		</div>
+
+		</form>
+    </div>
+	<!-- admin인증 모달을 쓸 페이지에 추가 start-->
+	<section class="modal modal-section type-admin">
+	    <div class="enroll_box_admin">
+	        <p class="menu_msg_admin"></p>
+	    </div>
+	    <div class="modal_input">
+	        <input class="custom_input_admin" type="search" size="60" placeholder="Admin Password" onfocus="this.placeholder=''" onblur="this.placeholder='Name'" name="admin_pass" th:id="admin_pass">
+	    </div>
+	    <div class="enroll_btn">
+	        <input type="button" class="btn_ok_alert btn_ok" />
+	        <input type="button" class="btn_cancel_alert modal_close" />
+	    </div>
+	</section>    
+</div>
+</html>

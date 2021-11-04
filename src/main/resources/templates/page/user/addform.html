@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/default}">
+
+<head>
+<script th:inline="javascript">
+
+$(document).ready(function() {
+    $(document).on("click", "#btn_save", function() {
+        action_popup.confirm("Save?", function(res) {
+            if (res) {
+               fn_add();
+            }
+        })
+    });
+
+    $(document).on("click", "#alert", function() {
+        action_popup.alert("저장되었습니다.!!");
+    });
+
+	init();
+});
+
+/*<![CDATA[*/
+function init() {
+}
+
+function fn_add() {
+	var email = $("input[name=email]");
+	if (email.val() == "" || email.val() == null) {
+		action_popup.alert("input email");
+		email.blur();
+		return;
+	} else {
+		email.val($.trim(email.val()))
+	}
+
+    var param = new Object();
+	param = $("#add_form").serialize();
+	$.ajax({
+		type: "get",
+		data: param,
+        dataType:'json',
+		url: "/user/add",
+		success : function(data, status) {
+			var result = data.result;
+			console.log("result:"+result);
+			if (result == "Successfully") {
+				fn_cancel();
+			} else {
+				action_popup.alert(result);
+			}
+		},
+		error: function(jqXHR, textStatus, errorThrown) {
+			console.log('error while post');
+		}
+	});
+    
+}
+
+function fn_cancel() {
+	$("#add_form").attr("action", "/user/list");
+    $("#add_form").submit();
+}
+function fn_chk(chk) {
+	if (chk.checked) {
+		$("#auth").val(1);
+	} else {
+		$("#auth").val(0);
+	}
+}
+/*]]*/
+</script>
+</head>
+
+<div layout:fragment="content">
+	<div class="tab_main" style="text-align:left">
+		<form role="form" id="add_form" method="post">
+		<input type="hidden" name="auth" id="auth" value=0>
+
+	    <div class="main_frame">
+	        <hr class="top_line">
+			<p class="main_title">User</p>
+	        
+	        <div class="maindiv">
+	            <div class="grid">
+	                <div class="grid_item_left">
+	                    <img alt="" th:src="@{/img/left_pencel.png}" class="space_img" /> 
+	                    <div class="space_text_01">New User </div>    
+	                    <div class="space_text_02"><p>Create New User for K8S EasyPass</p></div>  
+	                    <div class="space_text_03">This page is create new user page for K8S EasyPass. </div>  
+	                    <div class="space_text_03">If Check administrator check box, authorize Administrator. </div>  
+	                </div>
+	                <div class="grid_item_right">     
+                        <input class="custom_input" type="search" size="60" placeholder="Email" onfocus="this.placeholder=''" onblur="this.placeholder='Eamil'" name="email">
+                        <input class="custom_input" type="password" size="60" placeholder="Password" onfocus="this.placeholder=''" onblur="this.placeholder='Password'" name="pass">
+                        
+                        <div class="checks">
+                        	<input type="checkbox" id="admin_chk" th:attr="onclick=|fn_chk(this)|"> 
+                        	<label for="admin_chk" class="checkbox_admin">Administrator</label> 
+                        </div>
+                        <div class="new_button_pos">
+                            <span>
+                                <input type="button" class="btn_save" th:id="btn_save" />
+                                <input type="button" class="btn_cancel" th:attr="onclick=|fn_cancel()|" />
+                            </span>
+                        </div>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+		</form>
+	</div>
+</div>
+</html>
